@@ -47,3 +47,30 @@ Example:
 Example: 
 
 `simplelock custom_file ~/Pictures/wallpapers/current.png`
+
+## Installation
+
+simplelock is a drop in replacement for i3lock. If you are using
+i3wm you can edit your i3 config file and replace i3lock/blurlock
+etc with simplelock.
+
+For Manjaro i3, you might have to edit the `i3exit` script that
+is bundled.
+
+You can install it from source or the Arch User Repository.
+
+### AUR
+
+Simple lock is available in the [AUR](https://aur.archlinux.org/packages/simplelock/).
+
+## Manual Install
+
+```
+set -e
+git clone git@github.com:rhnvrm/simplelock.git
+cd simplelock
+mkdir -p ~/.config/simplelock
+cp lock.png ~/.config/simplelock/
+cp lockscreen.png ~/.config/simplelock/
+install -D -m755 -t "/usr/bin" "simplelock"
+```
