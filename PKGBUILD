@@ -1,14 +1,14 @@
 # Maintainer: Rohan Verma <hello@rohanverma.net>
-pkgname='simplelock'
-pkgver='v0.0.1'
+pkgname=simplelock
+pkgver=r3.bc8f7c3
 pkgrel=1
 pkgdesc="Fast and simple wrapper over i3lock with multiple modes. Supports xkcd and unsplash"
 arch=('any')
-url=""
+url="https://github.com/rhnvrm/simplelock"
 license=('MIT')
 groups=()
-depends=('i3lock')
-makedepends=()
+depends=('bash' 'i3lock')
+makedepends=('git')
 checkdepends=()
 optdepends=()
 provides=('simplelock')
@@ -16,18 +16,22 @@ conflicts=()
 replaces=()
 backup=()
 options=()
-install=
-changelog=
-source=('simplelock' 'lock.png' 'lockscreen.png') 
-noextract=()
-md5sums=('b3fd1ab5840cf0c2cbbc055d14c2bc9c'
-         '20745271b749810575648ebcd4844716'
-         '3df461bfa1643b4f20aa8701d3e91f61')
-validpgpkeys=()
+source=("simplelock-git::git+https://github.com/rhnvrm/simplelock.git")
+sha256sums=('SKIP')
+
+pkgver() {
+	cd "$srcdir/$pkgname-git"
+	( set -o pipefail
+	git describe --long 2>/dev/null | sed 's/\([^-]*-g\)/r\1/;s/-/./g' ||
+	printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+	)
+}
 
 package() {
+	set -e
+	cd $srcdir/$pkgname-git
 	mkdir -p ~/.config/simplelock
-	cp $srcdir/lock.png ~/.config/simplelock/
-	cp $srcdir/lockscreen.png ~/.config/simplelock/
-	install -D -t "$pkgdir/usr/bin" "$srcdir/simplelock"
+	cp lock.png ~/.config/simplelock/
+	cp lockscreen.png ~/.config/simplelock/
+	install -D -m755 -t "$pkgdir/usr/bin" "simplelock"
 }
