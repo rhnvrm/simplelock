@@ -1,0 +1,32 @@
+#!/bin/bash
+mkdir -p ~/.config/simplelock
+LOCKSCREEN=~/.config/simplelock/lockscreen.png
+LOCKSCREENJPG=~/.config/simplelock/lockscreen.jpg
+i3lock -t -i $LOCKSCREEN
+sleep 1
+# sleep 1 adds a small delay to prevent possible race conditions with suspend
+case "$1" in
+    xkcd_random)
+        (
+            wget -qO- http://c.xkcd.com/random/comic| wget -O $LOCKSCREEN $(grep -Po '(?<=")https://imgs[^/]+/comics/[^"]+\.\w{3}');
+        )&
+        ;;
+    xkcd_latest)
+        (
+            wget -qO- http://xkcd.com/| wget -O $LOCKSCREEN $(grep -Po '(?<=")https://imgs[^/]+/comics/[^"]+\.\w{3}');
+        )&
+        ;;
+    unsplash)
+        (
+            wget https://source.unsplash.com/1920x1080/?nature -O $LOCKSCREENJPG;
+            convert $LOCKSCREENJPG -blur 0x4 $LOCKSCREENJPG;
+            convert $LOCKSCREENJPG -gravity North -fill white -pointsize 80 -annotate +0+150 'type to unlock' $LOCKSCREENJPG;
+            convert $LOCKSCREENJPG -gravity SouthEast -fill white -pointsize 40 -annotate +50+25 ''"$USER"'' $LOCKSCREENJPG;
+            convert $LOCKSCREENJPG $LOCKSCREEN;
+        )&
+        ;;
+    *)
+        echo "== ! simplelock: missing or invalid argument ! =="
+        echo "Try again with: xkcd_random | xkcd_latest | unsplash"
+esac
+exit 0
