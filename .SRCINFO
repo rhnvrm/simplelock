@@ -1,0 +1,17 @@
+pkgbase = simplelock
+	pkgdesc = Fast and simple wrapper over i3lock with multiple modes. Supports xkcd and unsplash
+	pkgver = v0.0.1
+	pkgrel = 1
+	arch = any
+	license = MIT
+	depends = i3lock
+	provides = simplelock
+	source = simplelock
+	source = lock.png
+	source = lockscreen.png
+	md5sums = b3fd1ab5840cf0c2cbbc055d14c2bc9c
+	md5sums = 20745271b749810575648ebcd4844716
+	md5sums = 3df461bfa1643b4f20aa8701d3e91f61
+
+pkgname = simplelock
+
