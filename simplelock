@@ -3,17 +3,55 @@ LOCKSCREEN=~/.config/simplelock/lockscreen.png
 LOCKSCREENRAW=~/.config/simplelock/lockscreen_raw
 i3lock -t -i $LOCKSCREEN
 
+# Options
+SHOW_NAME=0
+
 # sleep 1 adds a small delay to prevent possible race conditions with suspend
 sleep 1
 
 # update in background
 (
+    # Parse options to the `pip` command
+    while getopts ":hn" opt; do
+    case ${opt} in
+        h )
+            echo "Usage:"
+            echo "    simplelock -h               Display this help message."
+            echo "    simplelock <package>        Run with <package>."
+            echo ""
+            echo "Available Packages:"
+            echo "    xkcd_random                 random xkcd comic"
+            echo "    xkcd_latest                 latest xkcd comic"
+            echo "    unsplash <size> <tag>       unsplash image"
+            echo "                                <size>: 1920x1080"
+            echo "                                <tag>:  nature"
+            echo "    custom_fetch <url>          fetch custom image from url"
+            echo "    custom_file  <path>         use custom image from path"
+            echo ""
+            echo "Flags:"
+            echo "    -h                          Display this help message"
+            echo "    -n                          Display username"
+            exit 0
+            ;;
+        n )
+            SHOW_NAME=1
+            ;;
+    \? )
+        echo "Invalid Option: -$OPTARG" 1>&2
+        exit 1
+        ;;
+    esac
+    done
+    shift $((OPTIND -1))
+
     case "$1" in
         xkcd_random)
-            wget -qO- http://c.xkcd.com/random/comic| wget -O $LOCKSCREEN $(grep -Po '(?<=")https://imgs[^/]+/comics/[^"]+\.\w{3}')
+            wget -qO- http://c.xkcd.com/random/comic | \
+            wget -O $LOCKSCREEN $(grep -Po '(?<=")https://imgs[^/]+/comics/[^"]+\.\w{3}')
             ;;
         xkcd_latest)
-            wget -qO- http://xkcd.com/| wget -O $LOCKSCREEN $(grep -Po '(?<=")https://imgs[^/]+/comics/[^"]+\.\w{3}')
+            wget -qO- http://xkcd.com/ | \
+            wget -O $LOCKSCREEN $(grep -Po '(?<=")https://imgs[^/]+/comics/[^"]+\.\w{3}')
             ;;
         unsplash)
             wget https://source.unsplash.com/$2/?$3 -O $LOCKSCREENRAW
@@ -34,6 +72,8 @@ sleep 1
     esac
 
     convert $LOCKSCREEN ~/.config/simplelock/lock.png -gravity Center -composite $LOCKSCREEN 
-    convert $LOCKSCREEN -gravity SouthEast -fill white -pointsize 40 -annotate +50+25 ''"$USER"'' $LOCKSCREEN;
+    if [ "$SHOW_NAME" = 1 ]; then  
+        convert $LOCKSCREEN -gravity SouthEast -fill white -pointsize 40 -annotate +50+25 ''"$USER"'' $LOCKSCREEN;
+    fi
 )&
 exit 0
